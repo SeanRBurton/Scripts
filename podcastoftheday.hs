@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Control.Monad
 import Data.List
 import Data.Maybe
 import Data.String
@@ -17,12 +16,12 @@ openURL x = simpleHTTP (Request (fromJust $ parseURI x) GET [] "")  >>= getRespo
 potdURL :: String
 potdURL = "http://www.bbc.co.uk/podcasts/series/podcastoftheday"
 
-podcastPrefix :: String
-podcastPrefix = "http://downloads.bbc.co.uk/podcasts/worldservice/podcastoftheday/podcastoftheday_"
+potdPrefix :: String
+potdPrefix = "http://downloads.bbc.co.uk/podcasts/worldservice/podcastoftheday/podcastoftheday_"
 
 findPodcasts :: String -> [String]
 findPodcasts [] = []
-findPodcasts s = case stripPrefix podcastPrefix s of 
+findPodcasts s = case stripPrefix potdPrefix s of 
     (Just s') -> let (ident, rest) = helper s' in ident : findPodcasts rest 
     Nothing    -> findPodcasts $ tail s 
     where helper [] = error "unexpected end of link name in function findPocasts"
@@ -58,3 +57,4 @@ main = do [directory] <- getArgs
           bodies <- mapM (openURL . toURL) idents
           mapM_ (\(ident, body) -> L.writeFile (directory `slash` toFilename ident) body) $ zip idents bodies
           
+
